@@ -25,3 +25,9 @@ archivos **.s** si les resulta práctico para emprolijar el código y el Makefil
 $ make run
 ```
 Esto construirá el código y ejecutará qemu para su emulación
+
+
+## Team
+* [Nahuel Fredes](https://github.com/NahuelFredes)
+* [Francisco Martiarena](https://github.com/FranMartiarena)
+* [Ignacio Martinez](https://github.com/IgnaCat)
