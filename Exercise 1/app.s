@@ -41,6 +41,35 @@ loop0:
 	mov x22, 320
 	bl circle
 
+	
+	movz x10, 0x18, lsl 16
+	movk x10, 0x2E3D, lsl 00
+	mov x1, 80	
+	mov x21, 495		
+	mov x22, 140
+	bl circle
+	movz x10, 0x4A, lsl 16
+	movz x10, 0x6F78, lsl 00
+	mov x1, 80	
+	mov x21, 495		
+	mov x22, 160
+	bl circle
+	
+
+	movz x10, 0x18, lsl 16
+	movk x10, 0x2E3D, lsl 00
+	mov x1, 80	
+	mov x21, 495		
+	mov x22, 500
+	bl circle
+	movz x10, 0x4A, lsl 16
+	movz x10, 0x6F78, lsl 00
+	mov x1, 80	
+	mov x21, 495		
+	mov x22, 480
+	bl circle
+	
+
 	//Rectangle Tables
 	// x1: X, x2: Y, x3: Width, x4: Height, x10: Color
 	movz x1, 212
@@ -69,7 +98,19 @@ loop0:
 	//mov x10, 0xFF0000
 	//bl rectangle
 	
+	mov x5, 100 // altura
+	mov x3, 212 // posicion esquina X
+	mov x4, 380 // posicion esquina Y
+	movz x11, 0x4A, lsl 16
+	movz x11, 0x6F78, lsl 00
+	bl triangulo
 
+	mov x5, 160 // altura
+	mov x3, 432 // posicion esquina X
+	mov x4, 380 // posicion esquina Y
+	movz x11, 0x4A, lsl 16
+	movz x11, 0x6F78, lsl 00
+	bl triangulo
 
 InfLoop: 
 	b InfLoop
@@ -80,12 +121,12 @@ circle:	// x1:R		x21:Y	x22:X
 	//C(X,Y)
 		
 	//Top left coords
-	sub x4, x2, x1 	//i = y-R
+	sub x4, x2, x1 		//i = y-R
 	sub x5, x22, x1 	//j	= x-R
 
 	//Bottom right coords
 	add x11, x21, x1 	//x11 = y+R
-	add x12, x22, x1 	//jx12 = x+R	
+	add x12, x22, x1 	//x12 = x+R	
 
 circle_next_row:		//x0 = x20 +  4*[X + (Y*640)]
 	sub x5, x22, x1
@@ -145,5 +186,67 @@ rectangle_draw_col:
 
 	ret
 
+
+
+triangulo:
+	sub sp, sp, 24
+	stur lr, [sp]	
+	stur x3, [sp, 8]
+	stur x4, [sp, 16]
+	
+	mov x9, x3
+	mov x1, x3
+	mov x2, x4
+	
+t_loopy:
+	mov x3, x9
+t_loopx:
+	bl setpixel
+	stur w11, [x7]
+	add x3, x3, 1
+	cmp x3, x1
+	b.le t_loopx
+	sub x9, x9, 1
+	add x1, x1, 1
+	add x4, x4, 1
+	sub x5, x5, 1
+	cbnz x5, t_loopy
+
+	ldur lr, [sp]
+	ldur x3, [sp, 8]
+	ldur x4, [sp, 16]
+	add sp, sp, 24
+	br lr
+	ret
+	
+//-------------------------------------------------------------------
+
+// calcula el valor correspondiente a un pixel dadas coordenas (x, y) guardas en x3 y x4 respectivamente
+// realiza la siguiente operacion:
+// pixel = 4 * [x + (y * 640)] + posicion cero del frame_buffer
+// no pinta el pixel, solo lo encuentra y lo retorna en el registro x7 para ser usado en otra funcion
+
+setpixel:
+    sub sp, sp, 48
+    stur x6, [sp, 40]
+    stur x9, [sp, 32]
+    stur lr, [sp, 24] 
+	stur x4, [sp, 8]
+	stur x3, [sp, 0]    
+	
+	mov x9, 640
+	mul x6, x4, x9
+	add x7, x6, x3
+	mov x9, 4 
+	mul x7, x7, x9              
+	add x7, x7, x20
+    
+    ldur x6, [sp, 40]
+    ldur x9, [sp, 32]
+    ldur lr, [sp, 24]
+	ldur x4, [sp, 8]
+	ldur x3, [sp, 0]
+	add sp, sp, 48   
+	br lr
 
 
