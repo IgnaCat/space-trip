@@ -9,6 +9,8 @@ main:
 	mov x20, x0
 	movz x10, 0x0C, lsl 16
 	movz x10, 0x191E, lsl 00 // Background color
+	movz x11, 0xFF, lsl 16
+	movk x11, 0xFFFF, lsl 00 // Stars color
 
 	mov x2, SCREEN_HEIGH         // Y Size 
 loop1:
@@ -20,23 +22,23 @@ loop0:
 	cbnz x1,loop0	   // If not end row jump
 	sub x2,x2,1	   // Decrement Y counter
 	cbnz x2,loop1	   // if not last row, jump
-
+    
 	// Window circle
 	// x1:R		x21:Y	x22:X	
 	movz x10, 0x18, lsl 16
 	movk x10, 0x2E3D, lsl 00
-	mov x1, 310	
+	mov x3, 310	
 	mov x21, 240		
 	mov x22, 320
 	bl circle
 	movz x10, 0x48, lsl 16
 	movz x10, 0x6C7B, lsl 00
-	mov x1, 295	
+	mov x3, 295	
 	mov x21, 240		
 	mov x22, 320
 	bl circle
 	mov x10, 0x000000
-	mov x1, 287	
+	mov x3, 287	
 	mov x21, 240		
 	mov x22, 320
 	bl circle
@@ -44,13 +46,13 @@ loop0:
 	
 	movz x10, 0x18, lsl 16
 	movk x10, 0x2E3D, lsl 00
-	mov x1, 80	
+	mov x3, 80	
 	mov x21, 495		
 	mov x22, 140
 	bl circle
 	movz x10, 0x4A, lsl 16
 	movz x10, 0x6F78, lsl 00
-	mov x1, 80	
+	mov x3, 80	
 	mov x21, 495		
 	mov x22, 160
 	bl circle
@@ -58,13 +60,13 @@ loop0:
 
 	movz x10, 0x18, lsl 16
 	movk x10, 0x2E3D, lsl 00
-	mov x1, 80	
+	mov x3, 80	
 	mov x21, 495		
 	mov x22, 500
 	bl circle
 	movz x10, 0x4A, lsl 16
 	movz x10, 0x6F78, lsl 00
-	mov x1, 80	
+	mov x3, 80	
 	mov x21, 495		
 	mov x22, 480
 	bl circle
@@ -112,24 +114,32 @@ loop0:
 	movz x11, 0x6F78, lsl 00
 	bl triangulo
 
+	movz x11, 0xFF, lsl 16
+	movk x11, 0xFFFF, lsl 00 // Stars color
+	
+    mov x23, 200	
+	mov x21, 200		
+	mov x22, 320
+    bl starfield
+
 InfLoop: 
 	b InfLoop
 
 
-circle:	// x1:R		x21:Y	x22:X		
+circle:	// x3:R		x21:Y	x22:X		
 
 	//C(X,Y)
 		
 	//Top left coords
-	sub x4, x2, x1 		//i = y-R
-	sub x5, x22, x1 	//j	= x-R
+	sub x4, x21, x3 		//i = y-R
+	sub x5, x22, x3 	//j	= x-R
 
 	//Bottom right coords
-	add x11, x21, x1 	//x11 = y+R
-	add x12, x22, x1 	//x12 = x+R	
+	add x11, x21, x3 	//x11 = y+R
+	add x12, x22, x3 	//x12 = x+R	
 
 circle_next_row:		//x0 = x20 +  4*[X + (Y*640)]
-	sub x5, x22, x1
+	sub x5, x22, x3
 	mov x6, SCREEN_WIDTH
 	mul x6, x6, x4
 	add x6, x6, x5
@@ -143,7 +153,7 @@ circle_draw_row:		//IF (i-y)^2 + (j-x)^2 <= R^2	 THEN	draw_pixel(j,i)
 	sub x13, x5, x22 	//x13 = j - x
 	mul x13, x13, x13	//x13 = (j-x)^2
 	add x7, x7, x13		//x7 = (i-y)^2 + (j-x)^2 
-	mul x9, x1, x1		//x9 = R^2
+	mul x9, x3, x3		//x9 = R^2
 	
 	cmp x5, x12
 	b.gt cir_continue_next_row
@@ -249,4 +259,115 @@ setpixel:
 	add sp, sp, 48   
 	br lr
 
+
+// Generador de pares (x1,x2) usando la secuencia de fibonacci, semilla en x9 (mayor a 15 para mas dispersion).
+// Este procedimiento usa y setea los registros x3, x4, x5, x6, x7 (los demas registros usados tienen valores pre-definidos) 
+
+fib:
+    mov x12, SCREEN_WIDTH
+    mov x13, SCREEN_HEIGH
+
+    mov x7, x9 //copio la semilla por necesito hacer variaciones mas adelante
+    movz x3, 0 //caso base
+    movz x4, 1 //caso base
+l:
+    add x5, x3, x4 //suma de los anteriores
+    mov x3, x4
+    mov x4, x5 // reemplazos
+    sub x7, x7, 1 // la idea es correr el algoritmo la cantidad de veces que diga la semilla.
+    cbnz x7, l
+   
+    udiv x6, x3, x12 // Uso aritmetica modular para meter los puntos en la pantalla
+    msub x3, x6, x12, x3 // Calculo x3 % width
+
+    udiv x6, x4, x13
+    msub x4, x6, x13, x4 // Calculo x4 % height
+    
+    mov x1, x3 // guardo las posiciones
+    mov x2, x4
+    ret x30
+
+
+
+
+
+// Genera un cuadrado en la posicion (x1, x2) de tamaño x8. El cuadrado se genera desde arriba a la izquierda para abajo a la derecha.
+// Este procedimiento usa y setea los registros x3, x4, x5, x6, x7 (los demas registros usados tienen valores pre-definidos) 
+
+
+cuad:
+    mov x12, SCREEN_WIDTH
+    mov x13, SCREEN_HEIGH
+    
+    movz x6, 0
+    mov x5, x2
+l0:
+    movz x7, 0
+    mov x4, x1
+l1:
+	mul x3, x12, x5 // x3 = i*N
+	add x3, x3, x4 // i*N + j
+	add x3, x20, x3, lsl 2 // guardo en x3 la direccion
+	
+    stur w11,[x3]
+    add x4, x4, 1
+    add x7, x7, 1
+    cmp x7, x8
+    b.ne l1
+    add x5, x5, 1 
+    add x6, x6, 1
+    cmp x6, x8
+    b.ne l0
+    ret x30
+    
+// Dibuja estrellas dentro de un circulo centrado en (x22, x21) de radio x23.
+// Si (x1, x2) cumple que (x1-x22)^2 + (x2-x21)^2 <= R^2 dibuja una estrella ahi.
+
+starfield:
+    mov x8, 1  //tamaño estrella
+    mov x9, 15 //semilla inicial
+    mov x14, 100 //cantidad de estrellas
+    mov x15, x30 //guardo la posicion del branch ya que llamo otra funcion 
+pos_estrella:
+    bl fib
+    add x9, x9, 1
+estrella_pertenece:
+	sub x4, x2, x21		//x4 = x2 - x21
+	mul x4, x4, x4		//x7 = (x2-x21)^2
+	sub x5, x1, x22 	//x5 = x1 - x22
+	mul x5, x5, x5	    //x5 = (x1-x22)^2
+	add x6, x4, x5		//x6 = (x1-x22)^2 + (x2-x21)^2
+	mul x7, x23, x23    //x7 = R^2
+	
+	cmp x6, x7
+	b.gt pos_estrella   // Si no cumple, proba con la semilla siguiente
+	
+	bl cuad
+	sub x14, x14, 1
+	cbnz x14, pos_estrella
+	ret x15
+	
+    
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
