@@ -280,7 +280,7 @@ circle_draw_row:		//IF (i-y)^2 + (j-x)^2 <= R^2	 THEN	draw_pixel(j,i)
 	cmp x7, x9
 	b.gt cir_next_pixel
 	
-	str x10, [x0]		//Draw actual pixel
+	stur w10, [x0]		//Draw actual pixel
 	
 	b cir_next_pixel
 
@@ -305,7 +305,7 @@ rectangle_draw_row: //x5 = x20 +  4*[X + (Y*640)]
 	add x5, x5, x20
 	mov x6, x3
 rectangle_draw_col:
-		str x10, [x5]
+		stur w10, [x5]
 		add x5, x5, #4
 		sub x6, x6, #1
 		cbnz x6, rectangle_draw_col
