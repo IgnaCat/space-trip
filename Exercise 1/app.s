@@ -43,7 +43,21 @@ loop0:
 	mov x22, 320
 	bl circle
 
-	
+	movz x10, 0x25, lsl 16
+	movk x10, 0x2338, lsl 00
+	mov x3, 140	
+	mov x21, 530		
+	mov x22, 200
+	bl circle
+	movz x10, 0x25, lsl 16
+	movk x10, 0x2338, lsl 00
+	mov x3, 140	
+	mov x21, 530		
+	mov x22, 440
+	bl circle
+
+	// Table circle
+	// x1:R		x21:Y	x22:X	
 	movz x10, 0x18, lsl 16
 	movk x10, 0x2E3D, lsl 00
 	mov x3, 80	
@@ -80,7 +94,6 @@ loop0:
 	movz x4, 100
 	movz x10, 0x4A, lsl 16
 	movz x10, 0x6F78, lsl 00
-
 	bl rectangle
 
 	add x1, x1, 220
@@ -100,6 +113,8 @@ loop0:
 	//mov x10, 0xFF0000
 	//bl rectangle
 	
+
+	// Table triangle
 	mov x5, 100 // altura
 	mov x3, 212 // posicion esquina X
 	mov x4, 380 // posicion esquina Y
@@ -114,6 +129,110 @@ loop0:
 	movz x11, 0x6F78, lsl 00
 	bl triangulo
 
+
+	//Rectangle on table
+	// x1: X, x2: Y, x3: Width, x4: Height, x10: Color
+	movz x1, 201
+	movz x2, 447
+	movz x3, 18
+	movz x4, 18
+	movz x10, 0x1B, lsl 16
+	movz x10, 0x323E, lsl 00
+	bl rectangle
+	movz x1, 223
+	movz x2, 447
+	movz x3, 18
+	movz x4, 18
+	movz x10, 0x1B, lsl 16
+	movz x10, 0x323E, lsl 00
+	bl rectangle
+	movz x1, 245
+	movz x2, 447
+	movz x3, 18
+	movz x4, 18
+	movz x10, 0x1B, lsl 16
+	movz x10, 0x323E, lsl 00
+	bl rectangle
+	movz x1, 267
+	movz x2, 447
+	movz x3, 18
+	movz x4, 18
+	movz x10, 0x1B, lsl 16
+	movz x10, 0x323E, lsl 00
+	bl rectangle
+
+	// Display 1
+	movz x1, 121
+	movz x2, 432
+	movz x3, 65
+	movz x4, 45
+	movz x10, 0x25, lsl 16
+	movk x10, 0x2338, lsl 00
+	bl rectangle
+	movz x1, 126
+	movz x2, 437
+	movz x3, 55
+	movz x4, 35
+	movz x10, 0x0000, lsl 16
+	bl rectangle
+
+	// Display 2
+	movz x1, 220
+	movz x2, 385
+	movz x3, 32
+	movz x4, 42
+	movz x10, 0x25, lsl 16
+	movk x10, 0x2338, lsl 00
+	bl rectangle
+	movz x1, 222
+	movz x2, 387
+	movz x3, 28
+	movz x4, 38
+	movz x10, 0x4E, lsl 16
+	movk x10, 0x8462, lsl 00
+	bl rectangle
+
+	// Display 3
+	movz x1, 257
+	movz x2, 385
+	movz x3, 96
+	movz x4, 42
+	movz x10, 0x25, lsl 16
+	movk x10, 0x2338, lsl 00
+	bl rectangle
+	movz x1, 259
+	movz x2, 387
+	movz x3, 92
+	movz x4, 38
+	movz x10, 0x4E, lsl 16
+	movk x10, 0x8462, lsl 00
+	bl rectangle
+
+	// Button circle
+	// x1:R		x21:Y	x22:X
+	movz x10, 0x4D, lsl 16
+	movk x10, 0xB131, lsl 00
+	mov x3, 8	
+	mov x21, 455		
+	mov x22, 210
+	bl circle
+	movz x10, 0xFF, lsl 16
+	mov x3, 8	
+	mov x21, 455		
+	mov x22, 232
+	bl circle
+	movz x10, 0xFF, lsl 16
+	mov x3, 8	
+	mov x21, 455		
+	mov x22, 254
+	bl circle
+	movz x10, 0xFF, lsl 16
+	mov x3, 8	
+	mov x21, 455		
+	mov x22, 276
+	bl circle
+
+	// Starfield
 	movz x11, 0xFF, lsl 16
 	movk x11, 0xFFFF, lsl 00 // Stars color
 	
