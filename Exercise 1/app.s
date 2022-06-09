@@ -133,30 +133,30 @@ loop0:
 	//Rectangle on table
 	// x1: X, x2: Y, x3: Width, x4: Height, x10: Color
 	movz x1, 201
-	movz x2, 447
-	movz x3, 18
-	movz x4, 18
+	movz x2, 446
+	movz x3, 19
+	movz x4, 19
 	movz x10, 0x1B, lsl 16
 	movz x10, 0x323E, lsl 00
 	bl rectangle
 	movz x1, 223
-	movz x2, 447
-	movz x3, 18
-	movz x4, 18
+	movz x2, 446
+	movz x3, 19
+	movz x4, 19
 	movz x10, 0x1B, lsl 16
 	movz x10, 0x323E, lsl 00
 	bl rectangle
 	movz x1, 245
-	movz x2, 447
-	movz x3, 18
-	movz x4, 18
+	movz x2, 446
+	movz x3, 19
+	movz x4, 19
 	movz x10, 0x1B, lsl 16
 	movz x10, 0x323E, lsl 00
 	bl rectangle
 	movz x1, 267
-	movz x2, 447
-	movz x3, 18
-	movz x4, 18
+	movz x2, 446
+	movz x3, 19
+	movz x4, 19
 	movz x10, 0x1B, lsl 16
 	movz x10, 0x323E, lsl 00
 	bl rectangle
@@ -208,6 +208,74 @@ loop0:
 	movk x10, 0x8462, lsl 00
 	bl rectangle
 
+
+	// Rectangle LEDs between buttons and displays
+	movz x1, 226
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0x5E, lsl 16	
+	movk x10, 0xA949, lsl 00
+	bl rectangle	//Green led
+	movz x1, 240
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0x5E, lsl 16
+	movk x10, 0xA949, lsl 00
+	bl rectangle	//Green led
+	movz x1, 254
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0xFB, lsl 16
+	movk x10, 0xC030, lsl 00
+	bl rectangle	//Yellow led
+	movz x1, 268
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0xFB, lsl 16
+	movk x10, 0xC030, lsl 00
+	bl rectangle	//Yellow led
+	movz x1, 282
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0x5E, lsl 16
+	movk x10, 0xA949, lsl 00
+	bl rectangle	//Green led
+	movz x1, 296
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0xC1, lsl 16
+	movk x10, 0xD1D0, lsl 00
+	bl rectangle	//White led
+	movz x1, 310
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0xC1, lsl 16
+	movk x10, 0xD1D0, lsl 00
+	bl rectangle	//White led
+	movz x1, 324
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0xFB, lsl 16
+	movk x10, 0xC030, lsl 00
+	bl rectangle	//Yellow led
+	movz x1, 338
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0x5E, lsl 16
+	movk x10, 0xA949, lsl 00
+	bl rectangle	//Green led
+
+
+	
 	// Button circle
 	// x1:R		x21:Y	x22:X
 	movz x10, 0x4D, lsl 16
@@ -230,6 +298,128 @@ loop0:
 	mov x3, 8	
 	mov x21, 455		
 	mov x22, 276
+	bl circle
+
+	//Little circle, white (ring), grey (inside circle) #1
+	movz x10, 0xFF, lsl 16
+	movk x10, 0xFFFF, lsl 00
+	mov x3, 12	
+	mov x21, 395		
+	mov x22, 375
+	bl circle
+	movz x10, 0x4C, lsl 16
+	movk x10, 0x4B4B, lsl 00
+	mov x3, 10	
+	mov x21, 395		
+	mov x22, 375
+	bl circle
+	//Little circle, white (ring), grey (inside circle) #2
+	movz x10, 0xFF, lsl 16
+	movk x10, 0xFFFF, lsl 00
+	mov x3, 12	
+	mov x21, 423		
+	mov x22, 375
+	bl circle
+	movz x10, 0x4C, lsl 16
+	movk x10, 0x4B4B, lsl 00
+	mov x3, 10	
+	mov x21, 423		
+	mov x22, 375
+	bl circle
+	//Little circle, white (ring), grey (inside circle) #3
+	movz x10, 0xFF, lsl 16
+	movk x10, 0xFFFF, lsl 00
+	mov x3, 7	
+	mov x21, 442		
+	mov x22, 500
+	bl circle
+	movz x10, 0x4C, lsl 16
+	movk x10, 0x4B4B, lsl 00
+	mov x3, 6	
+	mov x21, 442		
+	mov x22, 500
+	bl circle
+	//Little circle, grey (ring), yellow (inside circle)
+	movz x10, 0x44, lsl 16
+	movk x10, 0x5253, lsl 00
+	mov x3, 9	
+	mov x21, 456		
+	mov x22, 395
+	bl circle
+	movz x10, 0xFB, lsl 16
+	movk x10, 0xC030, lsl 00
+	mov x3, 7	
+	mov x21, 456		
+	mov x22, 395
+	bl circle
+	//Little circle, grey (ring), red (inside circle)
+	movz x10, 0x34, lsl 16
+	movk x10, 0x3A45, lsl 00
+	mov x3, 9	
+	mov x21, 466		
+	mov x22, 525
+	bl circle
+	movz x10, 0xFF, lsl 16
+	mov x3, 7	
+	mov x21, 466		
+	mov x22, 525
+	bl circle
+	//Little circle, dark-grey (ring), grey (inside circle)
+	movz x10, 0x34, lsl 16
+	movk x10, 0x3A45, lsl 00
+	mov x3, 9	
+	mov x21, 446		
+	mov x22, 525
+	bl circle
+	movz x10, 0x80, lsl 16 
+	movk x10, 0x8080, lsl 00
+	mov x3, 7	
+	mov x21, 446		
+	mov x22, 525
+	bl circle
+
+	//Big circle, white (ring), grey (inside circle)
+	movz x10, 0xFF, lsl 16
+	movk x10, 0xFFFF, lsl 00
+	mov x3, 19	
+	mov x21, 458		
+	mov x22, 450
+	bl circle
+	movz x10, 0x4C, lsl 16
+	movk x10, 0x4B4B, lsl 00
+	mov x3, 13	
+	mov x21, 458		
+	mov x22, 450
+	bl circle
+
+	
+
+	//Circle display
+	movz x10, 0x34, lsl 16
+	movk x10, 0x3A45, lsl 00
+	mov x3, 27	
+	mov x21, 412		
+	mov x22, 420
+	bl circle
+
+	// Bottom white circle trio
+	movz x10, 0xFF, lsl 16
+	movk x10, 0xFFFF, lsl 00
+	mov x3, 8	
+	mov x21, 466		
+	mov x22, 308
+	bl circle
+	movz x10, 0xFF, lsl 16
+	movk x10, 0xFFFF, lsl 00
+	mov x3, 8	
+	mov x21, 466		
+	mov x22, 328
+	bl circle
+	movz x10, 0xFF, lsl 16
+	movk x10, 0xFFFF, lsl 00
+	mov x3, 8	
+	mov x21, 466		
+	mov x22, 348
 	bl circle
 
 	// Starfield
