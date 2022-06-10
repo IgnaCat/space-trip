@@ -1,3 +1,45 @@
+/*
+  Nave viaje en el tiempo
+  Dibuja la cabina de una nave espacial, la cual contiene un gran vental con vista a las estrellas
+  y una mesa representando el panel de control.
+*/
+
+/*
+  Pseudocodigo de la estructura del script
+
+  apps.s:
+  	main: Llamados principales a las funciones de cabina y strafield
+  cabin.s:
+	rectangle: Dibuja un rectangulo.
+	triangle: Dibuja un triangulo.
+	circle: Dibuja un circulo.
+  starfield.s:
+	cuad: Dibuja un rectangulo.
+	strafield: Dibuja estrellas.
+	fib: Genera pares usando fibonacci.
+*/
+
+/* Lista de registros:
+  - x0:
+  - x1: X
+  - x2: Y
+  - x3:
+  - x4:
+  - x5:
+  - x6:
+  - x7:
+  - x8:
+  - x9:
+  - x10: Color
+
+*/
+
+/* Tareas relacionadas con los estandares
+  - Redefinir circulo usando x1:X, x2:Y
+  - Redefinir triangulo. Sacar el sp.
+  - Complentar todo siguiendo los comentarios agregados
+  - Agregar archivos para trabajar por separado
+*/
 
 .equ SCREEN_WIDTH, 		640
 .equ SCREEN_HEIGH, 		480
@@ -8,9 +50,9 @@
 main:
 	mov x20, x0
 	movz x10, 0x0C, lsl 16
-	movz x10, 0x191E, lsl 00 // Background color
+	movz x10, 0x191E, lsl 00 // Color de fondo
 	movz x11, 0xFF, lsl 16
-	movk x11, 0xFFFF, lsl 00 // Stars color
+	movk x11, 0xFFFF, lsl 00 // Color Estrellas
 
 	mov x2, SCREEN_HEIGH         // Y Size 
 loop1:
@@ -23,12 +65,14 @@ loop0:
 	sub x2,x2,1	   // Decrement Y counter
 	cbnz x2,loop1	   // if not last row, jump
     
-	// Window circle
-	// x1:R		x21:Y	x22:X	
+/* 
+Dibuja ventana circular principal
+Registros predefinidos: x1:R, x21:Y, x22:X, x10: Color
+*/
 	movz x10, 0x18, lsl 16
 	movk x10, 0x2E3D, lsl 00
 	mov x3, 310	
-	mov x21, 240		
+	mov x21, 240
 	mov x22, 320
 	bl circle
 	movz x10, 0x48, lsl 16
@@ -86,8 +130,10 @@ loop0:
 	bl circle
 	
 
-	//Rectangle Tables
-	// x1: X, x2: Y, x3: Width, x4: Height, x10: Color
+/* 
+Dibuja rectangulo principal para mesa del panel de control
+Registros predefinidos: x1: X, x2: Y, x3: Width, x4: Height, x10: Color
+*/
 	movz x1, 212
 	movz x2, 380
 	movz x3, 220
@@ -102,16 +148,14 @@ loop0:
 	movz x4, 60
 	movz x10, 0x4A, lsl 16
 	movz x10, 0x6F78, lsl 00
-	//mov x10, 0xFF0000 // Descomentar para ver en rojo la mesa del costado
-	//bl rectangle // Descomentar para ver las mesas del costado
+
 	sub x1, x1, 320
 	movz x2, 420
 	movz x3, 100
 	movz x4, 60
 	movz x10, 0x4A, lsl 16
 	movz x10, 0x6F78, lsl 00
-	//mov x10, 0xFF0000
-	//bl rectangle
+
 	
 
 	// Table triangle
@@ -436,12 +480,16 @@ InfLoop:
 	b InfLoop
 
 
-circle:	// x3:R		x21:Y	x22:X		
+/*
+  Funcion circle: Dibuja un circulo de radio R en posicion (x,y).
+  Registros predefinidos: x3:R, x21:Y, x22:X	
+  Registros seteados: 
+*/
 
-	//C(X,Y)
+circle:
 		
 	//Top left coords
-	sub x4, x21, x3 		//i = y-R
+	sub x4, x21, x3 	//i = y-R
 	sub x5, x22, x3 	//j	= x-R
 
 	//Bottom right coords
@@ -487,7 +535,13 @@ cir_next_pixel:
 	b circle_draw_row
 
 
-rectangle: // x1: X, x2: Y, x3: Width, x4: Height, x10: Color
+/*
+  Funcion Rectangle: Dibuja un cudrado de ancho y alto asignado en las posiciones (x,y).
+  Registros predefinidos: x1: X, x2: Y, x3: Width, x4: Height, x10: Color
+  Registros seteados: x5:Pixel, x6.
+*/
+
+rectangle: 
 rectangle_draw_row: //x5 = x20 +  4*[X + (Y*640)]
 	mov x5, SCREEN_WIDTH
 	mul x5, x2, x5
@@ -507,6 +561,11 @@ rectangle_draw_col:
 	ret
 
 
+/*
+  Funcion Triangulo:
+  Registros predefinidos: 
+  Registros seteados:
+*/ 
 
 triangulo:
 	sub sp, sp, 24
@@ -538,13 +597,6 @@ t_loopx:
 	add sp, sp, 24
 	br lr
 	ret
-	
-//-------------------------------------------------------------------
-
-// calcula el valor correspondiente a un pixel dadas coordenas (x, y) guardas en x3 y x4 respectivamente
-// realiza la siguiente operacion:
-// pixel = 4 * [x + (y * 640)] + posicion cero del frame_buffer
-// no pinta el pixel, solo lo encuentra y lo retorna en el registro x7 para ser usado en otra funcion
 
 setpixel:
     sub sp, sp, 48
@@ -570,8 +622,12 @@ setpixel:
 	br lr
 
 
-// Generador de pares (x1,x2) usando la secuencia de fibonacci, semilla en x9 (mayor a 15 para mas dispersion).
-// Este procedimiento usa y setea los registros x3, x4, x5, x6, x7 (los demas registros usados tienen valores pre-definidos) 
+/*
+  Funcion fib: Generador de pares (x1,x2) usando la secuencia de fibonacci, semilla en x9 
+  			   (mayor a 15 para mas dispersion).
+  Registros predefinidos: 
+  Registros seteados: x3, x4, x5, x6, x7.
+*/ 
 
 fib:
     mov x12, SCREEN_WIDTH
@@ -598,12 +654,13 @@ l:
     ret x30
 
 
-
-
-
-// Genera un cuadrado en la posicion (x1, x2) de tamaño x8. El cuadrado se genera desde arriba a la izquierda para abajo a la derecha.
-// Este procedimiento usa y setea los registros x3, x4, x5, x6, x7 (los demas registros usados tienen valores pre-definidos) 
-
+/*
+  Funcion Cuad: Genera un cuadrado en la posicion (x1, x2) de tamaño asignado.
+				El cuadrado se genera desde arriba a la izquierda para abajo a la derecha.
+  Registros predefinidos: x1: X, x2: Y, x8: Tamaño
+  Registros seteados: x3, x4, x5, x6, x7.
+  (** Usado solo en fun starfield **)
+*/
 
 cuad:
     mov x12, SCREEN_WIDTH
@@ -629,9 +686,14 @@ l1:
     cmp x6, x8
     b.ne l0
     ret x30
+
     
-// Dibuja estrellas dentro de un circulo centrado en (x22, x21) de radio x23, y por encima de la fila x24.
-// Si (x1, x2) cumple que (x1-x22)^2 + (x2-x21)^2 <= R^2 dibuja una estrella ahi.
+/*
+  Funcion Starfield: Dibuja estrellas dentro de un circulo centrado en (x22, x21) de radio x23, y por encima de la fila x24.
+  					 Si (x1, x2) cumple que (x1-x22)^2 + (x2-x21)^2 <= R^2 dibuja una estrella ahi.
+  Registros predefinidos:
+  Registros seteados: 
+*/
 
 starfield:
     mov x8, 1  //tamaño estrella
