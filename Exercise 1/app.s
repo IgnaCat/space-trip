@@ -426,9 +426,10 @@ loop0:
 	movz x11, 0xFF, lsl 16
 	movk x11, 0xFFFF, lsl 00 // Stars color
 	
-    mov x23, 200	
-	mov x21, 200		
+    mov x23, 287  // Estrellas en circulo de centro (x22, x21) radio x23 por encima de fila x24
+	mov x21, 240		
 	mov x22, 320
+	mov x24, 380
     bl starfield
 
 InfLoop: 
@@ -629,7 +630,7 @@ l1:
     b.ne l0
     ret x30
     
-// Dibuja estrellas dentro de un circulo centrado en (x22, x21) de radio x23.
+// Dibuja estrellas dentro de un circulo centrado en (x22, x21) de radio x23, y por encima de la fila x24.
 // Si (x1, x2) cumple que (x1-x22)^2 + (x2-x21)^2 <= R^2 dibuja una estrella ahi.
 
 starfield:
@@ -642,7 +643,7 @@ pos_estrella:
     add x9, x9, 1
 estrella_pertenece:
 	sub x4, x2, x21		//x4 = x2 - x21
-	mul x4, x4, x4		//x7 = (x2-x21)^2
+	mul x4, x4, x4		//x4 = (x2-x21)^2
 	sub x5, x1, x22 	//x5 = x1 - x22
 	mul x5, x5, x5	    //x5 = (x1-x22)^2
 	add x6, x4, x5		//x6 = (x1-x22)^2 + (x2-x21)^2
@@ -650,6 +651,9 @@ estrella_pertenece:
 	
 	cmp x6, x7
 	b.gt pos_estrella   // Si no cumple, proba con la semilla siguiente
+	cmp x2, x24 // Me fijo si pasa la cota en eje y propuesta en x23
+	b.gt pos_estrella // si no cumple, probar con la semilla siguiente
+	
 	
 	bl cuad
 	sub x14, x14, 1
