@@ -55,6 +55,9 @@ stars_array:  .skip 2400 //8*600 direcciones de estrellas a guardar
 .globl pos_array
 pos_array: .skip 2400 //8*600 posiciones z de estrellas a guardar
 
+.globl sign_update
+sign_update: .skip 8 
+
 
 .globl main
 main:
@@ -477,10 +480,13 @@ Registros predefinidos: x1: X, x2: Y, x3: Width, x4: Height, x10: Color
 	mov x3, 8	
 	mov x21, 466		
 	mov x22, 348
-	bl circle
+	bl circle   
 
-
-
+    
+    bl signo_peligro
+    ldr x28, =sign_update
+    stur xzr, [x28]//inicio contador para signo peligro
+    
     mov x19, x18 //base posiciones
     movz x4, 300 //cant elems
     bl init_pos  //genero las posiciones en z
@@ -489,31 +495,56 @@ Registros predefinidos: x1: X, x2: Y, x3: Width, x4: Height, x10: Color
     movz x21, 240
     movz x23, 287 //Este es el radio
     bl init_starfield //Genero la primera tanda de estrellas
-
+    
 //Loop general
 infloop:
-    //b infloop
+    ldr x28, =sign_update
+    bl update_danger_sign
+
+    //Estrellas
     movz x4, 300 // cantidad de elemento de mi arreglo (cantidad de estrellas)
     mov x27, x26 
     bl erase_stars //borro las estrellas
     
     mov x19, x18 //copy base
     movz x4, 300 // cantidad de elemento de mi arreglo (cantidad de estrellas)
-    bl update_pos
+    bl update_pos //actualizo la posicion de las estrellas
     
     movz x22, 320 // Uso (x22, x21 como origen)
     movz x21, 240
     movz x23, 287 //Este es el radio
-    bl init_starfield
+    bl init_starfield //pinto las estrellas
     movz x4, 400 //ACA DEFINO EL DELAY
 delayr:
     bl delay
     sub x4, x4, 1
     cmp x4, 0
     b.ne delayr
+    
+    
     b infloop
 
 
+update_danger_sign:
+    mov x15, x30
+    ldur x4, [x28]
+    cmp x4, 10 // cuando el contador sea 10 apago la pantalla
+    b.eq apagar
+    cmp x4, 20 // cuando sea 20 prendo la pantalla
+    b.eq prender
+    b sign_cont
+apagar:
+    bl black_display1
+    b sign_cont
+prender:
+    stur xzr, [x28]
+    bl signo_peligro
+sign_cont:
+    ldur x4, [x28]
+    add x4, x4, 1
+    stur x4, [x28]
+    ret x15
+    
 /*
   Funcion circle: Dibuja un circulo de radio R en posicion (x,y).
   Registros predefinidos: x3:R, x21:Y, x22:X	
@@ -644,6 +675,35 @@ t_loopx:
 	br lr
 	ret
 
+signo_peligro:
+    mov x16, x30
+    movz x22, 153
+    movz x21, 454
+    mov x3, 15
+    movz x10, #0xFF, lsl 16
+    bl circle
+    movz x1, 151
+    movz x2, 443
+    movz x3, 5
+    movz x4, 17
+    mov x10, xzr
+    bl rectangle
+    movz x22, 153
+    movz x21, 464   
+    mov x3, 3
+    bl circle  
+	ret x16
+
+black_display1:
+    mov x16, x30
+	movz x1, 126
+	movz x2, 437
+	movz x3, 55
+	movz x4, 35
+	mov x10, xzr
+	bl rectangle
+	ret x16
+
 setpixel:
     sub sp, sp, 48
     stur x6, [sp, 40]
@@ -714,7 +774,7 @@ l:
 //Guardo la direccion de cada estrella que se pinto en un arreglo.
 /*
 Registros predefinidos: x21, x22, x23 //correspone al centro (x22, x21) y radio x23 en el que se genera y fila sobre la que se dibuja x24
-Registros seteados: x1, x2, x3, x4, x5, x6, x7, x8, x9, x14, x15, x16, x19, x24, x27, x24
+Registros seteados: x1, x2, x3, x4, x5, x6, x7, x8, x9, x14, x15, x16, x19, x24, x27
 */
 init_starfield:
     mov x9, 15 //semilla inicial

@@ -26,29 +26,30 @@ LOAD start.o
  .rela.text.boot
                 0x00000000001100c8        0x0 app.o
 
-.data           0x00000000001100c8     0x1b80
- .data          0x00000000001100c8     0x1b80 app.o
+.data           0x00000000001100c8     0x1c40
+ .data          0x00000000001100c8     0x1c40 app.o
                 0x00000000001100c8                stars_array
                 0x0000000000110a28                pos_array
-                0x0000000000111388                main
- .data          0x0000000000111c48        0x0 start.o
+                0x0000000000111388                sign_update
+                0x0000000000111390                main
+ .data          0x0000000000111d08        0x0 start.o
 
-.igot.plt       0x0000000000111c48        0x0
- .igot.plt      0x0000000000111c48        0x0 app.o
+.igot.plt       0x0000000000111d08        0x0
+ .igot.plt      0x0000000000111d08        0x0 app.o
 
-.bss            0x0000000000111c48        0x0
+.bss            0x0000000000111d08        0x0
  *(.bss*)
- .bss           0x0000000000111c48        0x0 app.o
- .bss           0x0000000000111c48        0x0 start.o
+ .bss           0x0000000000111d08        0x0 app.o
+ .bss           0x0000000000111d08        0x0 start.o
 
-.bss            0x0000000000111c48        0x8
-                0x0000000000111c50                . = ALIGN (0x10)
- *fill*         0x0000000000111c48        0x8 
-                0x0000000000111c50                __bss_start = .
+.bss            0x0000000000111d08        0x8
+                0x0000000000111d10                . = ALIGN (0x10)
+ *fill*         0x0000000000111d08        0x8 
+                0x0000000000111d10                __bss_start = .
  *(.bss .bss.*)
  *(COMMON)
-                0x0000000000111c50                __bss_end = .
-                0x0000000000111c50                _end = .
+                0x0000000000111d10                __bss_end = .
+                0x0000000000111d10                _end = .
                 0x0000000000000000                __bss_size = ((__bss_end - __bss_start) >> 0x3)
 OUTPUT(kernel8.elf elf64-littleaarch64)
 LOAD linker stubs
