@@ -461,7 +461,67 @@ Registros predefinidos: x1: X, x2: Y, x3: Width, x4: Height, x10: Color
 	mov x21, 412		
 	mov x22, 420
 	bl circle
-
+	movz x10, 0xA000, lsl 00
+	mov x3, 25	
+	bl circle
+	movz x10, 0xF000, lsl 00
+	mov x3, 23	
+	bl circle
+    movz x10, 0xA000, lsl 00
+	mov x3, 21	
+	bl circle
+    movz x10, 0xF000, lsl 00
+	mov x3, 19	
+	bl circle
+	movz x10, 0xA000, lsl 00
+	mov x3, 17	
+	bl circle
+	movz x10, 0xF000, lsl 00
+	mov x3, 15	
+	bl circle
+	movz x10, 0xA000, lsl 00
+	mov x3, 13	
+	bl circle
+	movz x10, 0xF000, lsl 00
+	mov x3, 11	
+	bl circle
+	movz x10, 0xA000, lsl 00
+	mov x3, 9	
+	bl circle
+	movz x10, 0xF000, lsl 00
+	mov x3, 7	
+	bl circle
+	movz x10, 0xA000, lsl 00
+	mov x3, 5	
+	bl circle
+	movz x10, 0xF000, lsl 00
+	mov x3, 3	
+	bl circle
+	
+	//points in circle display
+	
+	movz x1, 412
+	movz x2, 425
+	movz x3, 2
+	movz x4, 2
+    movz x10, #0x5000
+	bl rectangle
+	movz x1, 415
+	movz x2, 420
+	movz x3, 2
+	movz x4, 2
+	bl rectangle
+	movz x1, 420
+	movz x2, 430
+	movz x3, 2
+	movz x4, 2
+	bl rectangle
+	movz x1, 430
+	movz x2, 425
+	movz x3, 2
+	movz x4, 2
+	bl rectangle	
+	
 	// Bottom white circle trio
 	movz x10, 0xFF, lsl 16
 	movk x10, 0xFFFF, lsl 00
