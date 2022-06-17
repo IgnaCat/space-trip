@@ -15,7 +15,7 @@
 .globl cabin
 
 cabin:
-
+	mov x16, x30
 /* 
 Dibuja ventana circular principal
 Registros predefinidos: x1:R, x21:Y, x22:X, x10: Color
@@ -478,5 +478,5 @@ Registros: x1: X, x2: Y, x3: R
 	movk x10, 0xFFFF, lsl 00
 	bl circle
 
-    ret 
+    ret x16
 
