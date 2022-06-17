@@ -364,6 +364,12 @@ Registros: x1: X, x2: Y, x3: R
 	movz x4, 2
 	bl rectangle
 
+    movz x1, 435
+	movz x2, 400
+	movz x3, 5
+	movz x4, 5
+	bl rectangle
+
 	// Bottom white circle trio
 	bl led_trio
 

@@ -39,8 +39,8 @@ draw_planet1:
     ret x30
 planet_cont0:    
     mov x15, x30
-    movz x10, 0x9F, lsl 16
-	movk x10, 0x4000, lsl 00
+    movz x10, 0x89, lsl 16
+	movk x10, 0x2000, lsl 00
 	ldr x4, =planet_size
 	ldr x5, =eje_planeta
 		
@@ -59,13 +59,28 @@ planet_cont1:
 planet_cont2:
 	add x22, x22, 1
 	stur x22, [x5]
-	
 	mov x21, 180		
 	mov x8, 287
 	mov x23, 240		
 	mov x24, 320
 	bl cutted_circle
+    
+    ldr x4, =planet_size
+	ldr x5, =eje_planeta
+    movz x10, 0x9f, lsl 16
+	movk x10, 0x4000, lsl 00
+    ldur x22, [x5]
+    ldur x3, [x4]
+    add x22, x22, 3
+    sub x3, x3, 3
+	mov x21, 180		
+	mov x8, 287
+	mov x23, 240		
+	mov x24, 320
+	bl cutted_circle
+	
     ret x15
+
 
 
 /*
