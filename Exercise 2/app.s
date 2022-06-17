@@ -17,6 +17,9 @@
     change_leds: Cambia los colores de los leds en la esquina inferior derecha.
     red_trio: Cambia los colores de los leds inferiores.
     yellow_led: Dibuja el led en rojo.
+    display_animation: Animacion en la pantalla/display del panel.
+    draw_rect: Dibuja linea azul en el display.
+    draw_shadow: Restura color que habia en el fondo.
   cabin.s:
 	cabin: Llamados a las funciones para la creacion de la cabina, se realizan seteos de registros.
   graphic.s:
@@ -55,9 +58,10 @@
 .globl planet_size
 .globl eje_planeta
 .globl buffer_copy
+.globl rectangle_array
 
 
-
+rectangle_array:  .skip 800 //8*100 direcciones de estrellas a guardar
 stars_array:  .skip 2400  //8*600 direcciones de estrellas a guardar
 pos_array: .skip 2400     //8*600 posiciones z de estrellas a guardar
 sign_update: .skip 8 
@@ -114,6 +118,9 @@ loop0:
     movz x21, 240
     movz x23, 287 //Este es el radio
     bl init_starfield //Genero la primera tanda de estrellas
+
+	mov x29, #258	//Posicion X de barrra de carga en display 3
+	
     
 //Loop general
 infloop:
@@ -122,6 +129,10 @@ infloop:
 
     ldr x25, =leds_update
 	bl update_leds
+
+    add x29, x29, #2
+	ldr x24,=rectangle_array
+    bl display_animation
 
     bl draw_planet1
     //Estrellas
@@ -147,7 +158,7 @@ delayr:
     sub x4, x4, 1
     cmp x4, 0
     b.ne delayr
-      
+	
     b infloop
 
 /*
@@ -173,9 +184,9 @@ looop0:
 update_danger_sign:
     mov x15, x30
     ldur x4, [x28]
-    cmp x4, 10 // cuando el contador sea 10 apago la pantalla
+    cmp x4, 10    // cuando el contador sea 10 apago la pantalla
     b.eq apagar
-    cmp x4, 20 // cuando sea 20 prendo la pantalla
+    cmp x4, 20    // cuando sea 20 prendo la pantalla
     b.eq prender
     b sign_cont
 apagar:
@@ -222,24 +233,24 @@ black_display1:
 update_leds:
     mov x14, x30
     ldur x8, [x25]
-    cmp x8, 10 // cuando el contador sea 10 restauro leds
+    cmp x8, 10    // cuando el contador sea 10 restauro leds
     b.eq restaurar_leds
-    cmp x8, 20 // cuando sea 20 prendo leds rojos
+    cmp x8, 20    // cuando sea 20 prendo leds rojos
     b.eq prender_leds
     b leds_cont
 restaurar_leds:
 	// funs en cabin.s
-    bl create_leds // Creo leds abajo de displays
+    bl create_leds   // Creo leds abajo de displays
 	bl left_leds
-	bl red_trio // Pongo los leds de las esquinas del led trio en rojo
-	bl red_yellow_led // Pongo led amarillo en rojo
+	bl red_trio   // Pongo los leds de las esquinas del led trio en rojo
+	bl red_yellow_led   // Pongo led amarillo en rojo
     b leds_cont
 prender_leds:
     stur xzr, [x25]
-    bl red_leds // Leds abajo display en rojo
-	bl change_leds  // Cambio los colores de los leds izquierdos
-	bl led_trio  // Led trio del medio en rojo
-	bl yellow_led // Led en amarillo
+    bl red_leds   // Leds abajo display en rojo
+	bl change_leds   // Cambio los colores de los leds izquierdos
+	bl led_trio   // Led trio del medio en rojo
+	bl yellow_led   // Led en amarillo
 leds_cont:
     ldur x8, [x25]
     add x8, x8, 1
@@ -249,6 +260,7 @@ leds_cont:
 red_leds:
 	mov x17, x30
 	// Rectangle LEDs between buttons and displays
+    // Los seteamos todos en color rojo
 	movz x1, 226
 	movz x2, 431
 	movz x3, 10
@@ -300,7 +312,7 @@ red_leds:
 
 change_leds:
 	mov x17, x30
-	//Little circle, grey (ring), red (inside circle)
+	//Little circle, grey (ring), grey (inside circle)
 	mov x1, 466		
 	mov x2, 525
 	mov x3, 9
@@ -313,7 +325,7 @@ change_leds:
 	movz x10, 0x80, lsl 16 
 	movk x10, 0x8080, lsl 00
 	bl circle
-	//Little circle, dark-grey (ring), grey (inside circle)
+	//Little circle, dark-grey (ring), red (inside circle)
 	mov x1, 446		
 	mov x2, 525
 	mov x3, 9	
@@ -358,18 +370,71 @@ red_yellow_led:
 	bl circle
 
 	ret x15
+	
+/*
+Animacion de linea azul la cual la dibuja, avanza su posicion en eje x y restaura el color de fondo.
+*/
+display_animation:
+	mov x15, x30
+	mov x27, x24	// x27 = rectangle_array[0]
+	
+	mov x7, #348	//tope X
+	sub x7, x7, x29
+	cbz x7, if_rect_limit
+	mov x12, x29
+	b if_not_rect_limit
+if_rect_limit:
+	mov x29, 260
+    mov x12, x29
+if_not_rect_limit:
+	movz x1, 387
+	movz x2, 5
+	movz x3, 38
+	movz x4, 0x1B, lsl 16
+	movk x4, 0x13F9, lsl 00
+	bl draw_rect
 
+	movz x9, 100
+	mov x27, x26	// x27 = rectangle_array[0]
+	bl draw_shadow
 
-    
+	ret x15
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+/*
+Dibuja linea azul en el display y guarda posiciones del pixel en rectangle_array.
+*/
+draw_rect: // x12: X, x1: Y, x2: W, x3: H, x4: Color
+	
+loop_fila: 
+	mov	   x5, SCREEN_WIDTH
+	mul    x5, x1, x5
+	add    x5, x5, x12
+	lsl	   x5, x5, #2
+	add    x5, x5, x20
+	mov    x6, x2
+	stur x5, [x27]		// Guardo la posicion del pixel que se va a pintar en x27
+	ldr x13, [x5]		// x13 = color del pixel en la direccion x5
+	add x27, x27, #8	// Siguiente posicion del rectangle_array
+loop_col: 
+		stur w4, [x5]
+		add x5, x5, #4
+		sub x6, x6, #1
+		cbnz x6, loop_col
+	add x1, x1, #1
+	sub x3, x3, #1
+	cbnz x3, loop_fila
+	ret
 
+/*
+Borra linea gruesa azul y setea color del fondo de la pantalla
+*/
+draw_shadow:
+    mov x17, x30
+	ldr x25, [x24]
+	movz x10, 0x4E, lsl 16
+	movk x10, 0x8462, lsl 00
+	stur w10, [x25]
+	add x24, x24, #8
+	sub x9, x9, #1
+	cbnz x9, draw_shadow
+	ret x17
