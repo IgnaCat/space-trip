@@ -43,11 +43,18 @@
 .globl stars_array
 .globl pos_array
 .globl sign_update
+.globl planet_size
+.globl eje_planeta
+.globl buffer_copy
+
+
 
 stars_array:  .skip 2400  //8*600 direcciones de estrellas a guardar
 pos_array: .skip 2400     //8*600 posiciones z de estrellas a guardar
 sign_update: .skip 8 
-
+planet_size: .skip 8 //tamaño planeta
+eje_planeta: .skip 8 //eje planeta
+buffer_copy: .skip 2457600 // para guardar colores de la pantalla
 
 .globl main
 main:
@@ -73,6 +80,14 @@ loop0:
     
 	bl cabin
     
+    mov x6, 450
+    ldr x5, =eje_planeta
+    stur x6, [x5]
+    
+    ldr x15, = buffer_copy
+    mov x0, x20
+    bl copy_background
+    
     bl signo_peligro
     ldr x28, =sign_update
     stur xzr, [x28]//inicio contador para signo peligro
@@ -90,7 +105,7 @@ loop0:
 infloop:
     ldr x28, =sign_update
     bl update_danger_sign
-
+    bl draw_planet1
     //Estrellas
     movz x4, 300 // cantidad de elemento de mi arreglo (cantidad de estrellas)
     mov x27, x26 
@@ -99,6 +114,10 @@ infloop:
     mov x19, x18 //copy base
     movz x4, 300 // cantidad de elemento de mi arreglo (cantidad de estrellas)
     bl update_pos //actualizo la posicion de las estrellas
+    
+    ldr x15, = buffer_copy
+    mov x0, x20
+    bl copy_background //copio colores del frame
     
     movz x22, 320 // Uso (x22, x21 como origen)
     movz x21, 240
@@ -110,9 +129,26 @@ delayr:
     sub x4, x4, 1
     cmp x4, 0
     b.ne delayr
-    
-    
+      
     b infloop
+
+
+//copia los colores en pantalla en memoria, hacer x0 un puntero al frame buffer, y x15 un puntero al arreglo de colores
+//setea x1, x2, x3
+copy_background:
+	mov x2, SCREEN_HEIGH         // Y Size 
+looop1:
+	mov x1, SCREEN_WIDTH         // X Size
+looop0:
+	ldur x3,[x0]	   // x3 = color pixel en dire x0
+	stur x3, [x15]
+	add x0,x0,4	   // Next pixel
+	add x15,x15,8	
+	sub x1,x1,1	   // decrement X counter
+	cbnz x1,looop0	   // If not end row jump
+	sub x2,x2,1	   // Decrement Y counter
+	cbnz x2,looop1	   // if not last row, jump
+    ret x30
 
 
 update_danger_sign:
@@ -188,9 +224,7 @@ setpixel:
 	br lr
 
     
-    
-    
-    
+
     
     
     

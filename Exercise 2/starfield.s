@@ -23,8 +23,114 @@
 .globl init_pos
 .globl erase_stars
 .globl update_pos
+.globl draw_planet1
+.globl cutted_circle
 
 
+draw_planet1:
+    ldr x28, =sign_update
+    ldur x15, [x28]
+    cmp x15, 5
+    b.eq planet_cont0
+    cmp x15, 15
+    b.eq planet_cont0
+    ret x30
+planet_cont0:    
+    mov x15, x30
+    movz x10, 0x9F, lsl 16
+	movk x10, 0x4000, lsl 00
+	ldr x4, =planet_size
+	ldr x5, =eje_planeta
+		
+	ldur x3, [x4]
+	cmp x3, 200    //SIZE LIMIT
+	b.ne planet_cont1
+	movz x3, 199
+planet_cont1:	
+	add x3, x3, 1
+	stur x3, [x4]
+	
+	ldur x22, [x5]
+	cmp x22, 650   //x axis limit
+	b.ne planet_cont2
+	movz x22, 649
+planet_cont2:
+	add x22, x22, 1
+	stur x22, [x5]
+	
+	mov x21, 50		
+	mov x8, 287
+	mov x23, 240		
+	mov x24, 320
+	bl cutted_circle
+    ret x15
+
+
+/*
+  Funcion cutted_circle: Dibuja un circulo de radio R en posicion (x,y) dentro de otro circulo
+  Registros predefinidos: x3:R1, x21:Y1, x22:X1, x8:R2, x23:Y2, x24:X2, 	
+  Registros seteados: 
+*/
+
+cutted_circle:
+		
+	//Top left coords
+	sub x4, x21, x3 	//i = y-R
+	sub x5, x22, x3 	//j	= x-R
+
+	//Bottom right coords
+	add x11, x21, x3 	//x11 = y+R
+	add x12, x22, x3 	//x12 = x+R	
+
+cutted_circle_next_row:		//x0 = x20 +  4*[j + (i*640)]
+	sub x5, x22, x3
+	mov x6, SCREEN_WIDTH
+	mul x6, x6, x4
+	add x6, x6, x5
+	lsl x6, x6, #2
+	add x0, x20, x6
+
+
+cutted_circle_draw_row:		//IF (i-y1)^2 + (j-x1)^2 <= R1^2	 THEN	draw_pixel(j,i)
+	sub x7, x4, x21		//x7 = i - y1
+	mul x7, x7, x7		//x7 = (i-y1)^2
+	sub x13, x5, x22 	//x13 = j - x1
+	mul x13, x13, x13	//x13 = (j-x1)^2
+	add x7, x7, x13		//x7 = (i-y1)^2 + (j-x1)^2 
+	mul x9, x3, x3		//x9 = R1^2
+	
+	cmp x5, x12
+	b.gt cutted_cir_continue_next_row 
+
+	cmp x7, x9 //compare for original circle 1
+	b.gt cutted_cir_next_pixel
+	
+    sub x7, x4, x23		//x7 = i - y2
+	mul x7, x7, x7		//x7 = (i-y2)^2
+	sub x13, x5, x24 	//x13 = j - x2
+	mul x13, x13, x13	//x13 = (j-x2)^2
+	add x7, x7, x13		//x7 = (i-y2)^2 + (j-x2)^2 
+	mul x9, x8, x8		//x9 = R2^2
+	
+	cmp x7, x9
+	b.gt cutted_cir_next_pixel //compare for external circle 2
+	
+	stur w10, [x0]		//Draw actual pixel
+	
+	b cutted_cir_next_pixel
+
+cutted_cir_continue_next_row:
+	add x4, x4, #1
+	cmp x4, x11
+	b.le cutted_circle_next_row
+	ret
+
+cutted_cir_next_pixel:
+	add x5, x5, #1		//x5 = j + 1		
+	add x0, x0, #4		//fb next pixel
+	b cutted_circle_draw_row    
+    
+    
 
 /*
   Funcion fib: Generador de pares (x1,x2) usando la secuencia de fibonacci, semilla en x9 (mayor a 15 para mas dispersion).
@@ -139,14 +245,22 @@ conttt:
     cbnz x4, bucle 
     ret x30
 
-/*  
-erase_stars: Borra las estrellas que esten en el arreglo de estrellas
+// Borra las estrellas que esten en el arreglo de estrellas
+/*
 Registros predefinidos: x27->array pointer a la base, x4->cantidad de elemento del arreglo
 Registros seteados:
 */   
 erase_stars:
     ldur x25, [x27] //cargo la direccion de la estrella
-    stur xzr, [x25] //la elimino
+    ldr x15, =buffer_copy
+    //x25 = x20 +  4*[X + (Y*640)]
+    sub x25, x25, x20 //x3 = 4*[X + (Y*640)]
+    lsl x25, x25, 1 //x3 = cantidad de veces q avanzo en la copia del frame para encontrar el color q habia    
+    add x15, x15, x25 //x15 = direccion con el color
+    
+    ldur x6, [x15]
+    ldur x25, [x27]
+    stur x6, [x25] //la elimino
     add x27, x27, 8 //siguiente
     sub x4, x4, 1
     cbnz x4, erase_stars

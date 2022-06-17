@@ -1,0 +1,119 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD app.o
+LOAD cabin.o
+LOAD graphic.o
+LOAD starfield.o
+LOAD start.o
+                0x0000000000080000                . = 0x80000
+
+.text           0x0000000000080000    0x90af0
+ *(.text.boot)
+ .text.boot     0x0000000000080000    0x100c8 start.o
+                0x0000000000080000                _start
+ *(.text*)
+ .text          0x00000000000900c8        0x0 app.o
+ .text          0x00000000000900c8      0x62c cabin.o
+                0x00000000000900c8                cabin
+ .text          0x00000000000906f4      0x168 graphic.o
+                0x00000000000906f4                circle
+                0x0000000000090768                rectangle
+                0x00000000000907a0                triangulo
+                0x000000000009084c                delay
+ *fill*         0x000000000009085c        0x4 
+ .text          0x0000000000090860      0x290 starfield.o
+                0x0000000000090860                draw_planet1
+                0x00000000000908d8                cutted_circle
+                0x000000000009096c                fib
+                0x00000000000909d0                init_starfield
+                0x0000000000090a50                init_pos
+                0x0000000000090a78                erase_stars
+                0x0000000000090aa8                update_pos
+ .text          0x0000000000090af0    0x80000 start.o
+
+.iplt           0x0000000000110af0        0x0
+ .iplt          0x0000000000110af0        0x0 app.o
+
+.rela.dyn       0x0000000000110af0        0x0
+ .rela.iplt     0x0000000000110af0        0x0 app.o
+ .rela.text.boot
+                0x0000000000110af0        0x0 app.o
+
+.data           0x0000000000110af0   0x2594f0
+ .data          0x0000000000110af0   0x2594f0 app.o
+                0x0000000000110af0                stars_array
+                0x0000000000111450                pos_array
+                0x0000000000111db0                sign_update
+                0x0000000000111db8                planet_size
+                0x0000000000111dc0                eje_planeta
+                0x0000000000111dc8                buffer_copy
+                0x0000000000369dc8                main
+ .data          0x0000000000369fe0        0x0 cabin.o
+ .data          0x0000000000369fe0        0x0 graphic.o
+ .data          0x0000000000369fe0        0x0 starfield.o
+ .data          0x0000000000369fe0        0x0 start.o
+
+.igot.plt       0x0000000000369fe0        0x0
+ .igot.plt      0x0000000000369fe0        0x0 app.o
+
+.bss            0x0000000000369fe0        0x0
+ *(.bss*)
+ .bss           0x0000000000369fe0        0x0 app.o
+ .bss           0x0000000000369fe0        0x0 cabin.o
+ .bss           0x0000000000369fe0        0x0 graphic.o
+ .bss           0x0000000000369fe0        0x0 starfield.o
+ .bss           0x0000000000369fe0        0x0 start.o
+
+.bss            0x0000000000369fe0        0x0
+                0x0000000000369fe0                . = ALIGN (0x10)
+                0x0000000000369fe0                __bss_start = .
+ *(.bss .bss.*)
+ *(COMMON)
+                0x0000000000369fe0                __bss_end = .
+                0x0000000000369fe0                _end = .
+                0x0000000000000000                __bss_size = ((__bss_end - __bss_start) >> 0x3)
+OUTPUT(kernel8.elf elf64-littleaarch64)
+LOAD linker stubs
+
+.debug_line     0x0000000000000000      0x394
+ .debug_line    0x0000000000000000      0x1c7 cabin.o
+ .debug_line    0x00000000000001c7       0x9a graphic.o
+ .debug_line    0x0000000000000261       0xe0 starfield.o
+ .debug_line    0x0000000000000341       0x53 start.o
+
+.debug_info     0x0000000000000000       0xb8
+ .debug_info    0x0000000000000000       0x2e cabin.o
+ .debug_info    0x000000000000002e       0x2e graphic.o
+ .debug_info    0x000000000000005c       0x2e starfield.o
+ .debug_info    0x000000000000008a       0x2e start.o
+
+.debug_abbrev   0x0000000000000000       0x50
+ .debug_abbrev  0x0000000000000000       0x14 cabin.o
+ .debug_abbrev  0x0000000000000014       0x14 graphic.o
+ .debug_abbrev  0x0000000000000028       0x14 starfield.o
+ .debug_abbrev  0x000000000000003c       0x14 start.o
+
+.debug_aranges  0x0000000000000000       0xc0
+ .debug_aranges
+                0x0000000000000000       0x30 cabin.o
+ .debug_aranges
+                0x0000000000000030       0x30 graphic.o
+ .debug_aranges
+                0x0000000000000060       0x30 starfield.o
+ .debug_aranges
+                0x0000000000000090       0x30 start.o
+
+.debug_str      0x0000000000000000       0x67
+ .debug_str     0x0000000000000000       0x49 cabin.o
+ .debug_str     0x0000000000000049        0xa graphic.o
+                                         0x4b (size before relaxing)
+ .debug_str     0x0000000000000053        0xc starfield.o
+                                         0x4d (size before relaxing)
+ .debug_str     0x000000000000005f        0x8 start.o
+                                         0x49 (size before relaxing)
