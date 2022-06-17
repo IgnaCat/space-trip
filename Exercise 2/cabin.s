@@ -363,8 +363,7 @@ Registros: x1: X, x2: Y, x3: R
 	movz x3, 2
 	movz x4, 2
 	bl rectangle
-
-    movz x1, 435
+    movz x1, 425
 	movz x2, 400
 	movz x3, 5
 	movz x4, 5
