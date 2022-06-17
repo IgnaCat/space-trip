@@ -6,6 +6,12 @@
 
   cabin.s:
     cabin: Llamados a funciones de graphic.s para la creacion del panel principal, ventanas, etc.
+	create_leds: Crea leds abajo de las pantallas del medio.
+	left_leds: Crea leds abajo en la esquina derecha de la mesa.
+	led_trio: Crea tres leds en la parte inferior.
+	yellow_led: Crea un led amarillo:
+	(Estas funciones son usadas para hacer las animaciones)
+
 */
 
 
@@ -202,73 +208,7 @@ Registros: x1: X, x2: Y, x3: Width, x4: Height, x10: Color
 	movk x10, 0x8462, lsl 00
 	bl rectangle
 
-
-	// Rectangle LEDs between buttons and displays
-	movz x1, 226
-	movz x2, 431
-	movz x3, 10
-	movz x4, 7
-	movz x10, 0x5E, lsl 16	
-	movk x10, 0xA949, lsl 00
-	bl rectangle	//Green led
-	movz x1, 240
-	movz x2, 431
-	movz x3, 10
-	movz x4, 7
-	movz x10, 0x5E, lsl 16
-	movk x10, 0xA949, lsl 00
-	bl rectangle	//Green led
-	movz x1, 254
-	movz x2, 431
-	movz x3, 10
-	movz x4, 7
-	movz x10, 0xFB, lsl 16
-	movk x10, 0xC030, lsl 00
-	bl rectangle	//Yellow led
-	movz x1, 268
-	movz x2, 431
-	movz x3, 10
-	movz x4, 7
-	movz x10, 0xFB, lsl 16
-	movk x10, 0xC030, lsl 00
-	bl rectangle	//Yellow led
-	movz x1, 282
-	movz x2, 431
-	movz x3, 10
-	movz x4, 7
-	movz x10, 0x5E, lsl 16
-	movk x10, 0xA949, lsl 00
-	bl rectangle	//Green led
-	movz x1, 296
-	movz x2, 431
-	movz x3, 10
-	movz x4, 7
-	movz x10, 0xC1, lsl 16
-	movk x10, 0xD1D0, lsl 00
-	bl rectangle	//White led
-	movz x1, 310
-	movz x2, 431
-	movz x3, 10
-	movz x4, 7
-	movz x10, 0xC1, lsl 16
-	movk x10, 0xD1D0, lsl 00
-	bl rectangle	//White led
-	movz x1, 324
-	movz x2, 431
-	movz x3, 10
-	movz x4, 7
-	movz x10, 0xFB, lsl 16
-	movk x10, 0xC030, lsl 00
-	bl rectangle	//Yellow led
-	movz x1, 338
-	movz x2, 431
-	movz x3, 10
-	movz x4, 7
-	movz x10, 0x5E, lsl 16
-	movk x10, 0xA949, lsl 00
-	bl rectangle	//Green led
-
-
+	bl create_leds
 	
 /* 
 Circulos para el panel
@@ -336,44 +276,10 @@ Registros: x1: X, x2: Y, x3: R
 	movz x10, 0x4C, lsl 16
 	movk x10, 0x4B4B, lsl 00
 	bl circle
-	//Little circle, grey (ring), yellow (inside circle)
-	mov x1, 456		
-	mov x2, 395
-	mov x3, 9
-	movz x10, 0x44, lsl 16
-	movk x10, 0x5253, lsl 00
-	bl circle
-	mov x1, 456		
-	mov x2, 395
-	mov x3, 7
-	movz x10, 0xFB, lsl 16
-	movk x10, 0xC030, lsl 00
-	bl circle
-	//Little circle, grey (ring), red (inside circle)
-	mov x1, 466		
-	mov x2, 525
-	mov x3, 9
-	movz x10, 0x34, lsl 16
-	movk x10, 0x3A45, lsl 00
-	bl circle
-	mov x1, 466		
-	mov x2, 525
-	mov x3, 7
-	movz x10, 0xFF, lsl 16
-	bl circle
-	//Little circle, dark-grey (ring), grey (inside circle)
-	mov x1, 446		
-	mov x2, 525
-	mov x3, 9	
-	movz x10, 0x34, lsl 16
-	movk x10, 0x3A45, lsl 00
-	bl circle		
-	mov x1, 446		
-	mov x2, 525
-	mov x3, 7
-	movz x10, 0x80, lsl 16 
-	movk x10, 0x8080, lsl 00
-	bl circle
+
+	bl yellow_led
+	
+	bl left_leds
 
 	//Big circle, white (ring), grey (inside circle)
 	mov x1, 458		
@@ -457,13 +363,116 @@ Registros: x1: X, x2: Y, x3: R
 	movz x3, 2
 	movz x4, 2
 	bl rectangle
-	movz x1, 430
-	movz x2, 400
-	movz x3, 4
-	movz x4, 4
-	bl rectangle
 
 	// Bottom white circle trio
+	bl led_trio
+
+    ret x16
+
+.globl create_leds
+create_leds:
+	mov x15, x30
+	// Rectangle LEDs between buttons and displays
+	movz x1, 226
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0x5E, lsl 16	
+	movk x10, 0xA949, lsl 00
+	bl rectangle	//Green led
+	movz x1, 240
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0x5E, lsl 16
+	movk x10, 0xA949, lsl 00
+	bl rectangle	//Green led
+	movz x1, 254
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0xFB, lsl 16
+	movk x10, 0xC030, lsl 00
+	bl rectangle	//Yellow led
+	movz x1, 268
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0xFB, lsl 16
+	movk x10, 0xC030, lsl 00
+	bl rectangle	//Yellow led
+	movz x1, 282
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0x5E, lsl 16
+	movk x10, 0xA949, lsl 00
+	bl rectangle	//Green led
+	movz x1, 296
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0xC1, lsl 16
+	movk x10, 0xD1D0, lsl 00
+	bl rectangle	//White led
+	movz x1, 310
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0xC1, lsl 16
+	movk x10, 0xD1D0, lsl 00
+	bl rectangle	//White led
+	movz x1, 324
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0xFB, lsl 16
+	movk x10, 0xC030, lsl 00
+	bl rectangle	//Yellow led
+	movz x1, 338
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, 0x5E, lsl 16
+	movk x10, 0xA949, lsl 00
+	bl rectangle	//Green led
+
+	ret x15
+
+.globl left_leds
+left_leds:
+	mov x15, x30
+	//Little circle, grey (ring), red (inside circle)
+	mov x1, 466		
+	mov x2, 525
+	mov x3, 9
+	movz x10, 0x34, lsl 16
+	movk x10, 0x3A45, lsl 00
+	bl circle
+	mov x1, 466		
+	mov x2, 525
+	mov x3, 7
+	movz x10, 0xFF, lsl 16
+	bl circle
+	//Little circle, dark-grey (ring), grey (inside circle)
+	mov x1, 446		
+	mov x2, 525
+	mov x3, 9	
+	movz x10, 0x34, lsl 16
+	movk x10, 0x3A45, lsl 00
+	bl circle		
+	mov x1, 446		
+	mov x2, 525
+	mov x3, 7
+	movz x10, 0x80, lsl 16 
+	movk x10, 0x8080, lsl 00
+	bl circle
+
+	ret x15
+
+.globl led_trio
+led_trio: 
+	mov x15, x30
 	mov x1, 466		
 	mov x2, 308
 	mov x3, 8
@@ -473,8 +482,7 @@ Registros: x1: X, x2: Y, x3: R
 	mov x1, 466		
 	mov x2, 328
 	mov x3, 8
-	movz x10, 0xFF, lsl 16
-	movk x10, 0xFFFF, lsl 00
+	movz x10, #0xFF, lsl 16
 	bl circle
 	mov x1, 466		
 	mov x2, 348
@@ -483,5 +491,23 @@ Registros: x1: X, x2: Y, x3: R
 	movk x10, 0xFFFF, lsl 00
 	bl circle
 
-    ret x16
+	ret x15
 
+.globl yellow_led
+yellow_led:
+	mov x15, x30
+	//Little circle, grey (ring), yellow (inside circle)
+	mov x1, 456		
+	mov x2, 395
+	mov x3, 9
+	movz x10, 0x44, lsl 16
+	movk x10, 0x5253, lsl 00
+	bl circle
+	mov x1, 456		
+	mov x2, 395
+	mov x3, 7
+	movz x10, 0xFB, lsl 16
+	movk x10, 0xC030, lsl 00
+	bl circle
+
+	ret x15

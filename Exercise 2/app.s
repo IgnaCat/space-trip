@@ -9,6 +9,14 @@
 
   apps.s:
   	main: Llamados principales a las funciones de cabina y starfield.
+    copy_background: Copia los colores en pantalla en memoria (subframe).
+    update_danger_sign: Animacion signo de peligro.
+    signo_peligro: Dibuja signo peligro.
+    update_leds: Animacion botones/leds.
+    red_leds: Dibuja todos los leds en rojo de abajo de las pantallas.
+    change_leds: Cambia los colores de los leds en la esquina inferior derecha.
+    red_trio: Cambia los colores de los leds inferiores.
+    yellow_led: Dibuja el led en rojo.
   cabin.s:
 	cabin: Llamados a las funciones para la creacion de la cabina, se realizan seteos de registros.
   graphic.s:
@@ -43,6 +51,7 @@
 .globl stars_array
 .globl pos_array
 .globl sign_update
+.globl leds_update
 .globl planet_size
 .globl eje_planeta
 .globl buffer_copy
@@ -52,6 +61,7 @@
 stars_array:  .skip 2400  //8*600 direcciones de estrellas a guardar
 pos_array: .skip 2400     //8*600 posiciones z de estrellas a guardar
 sign_update: .skip 8 
+leds_update: .skip 8
 planet_size: .skip 8 //tamaño planeta
 eje_planeta: .skip 8 //eje planeta
 buffer_copy: .skip 2457600 // para guardar colores de la pantalla
@@ -91,6 +101,10 @@ loop0:
     bl signo_peligro
     ldr x28, =sign_update
     stur xzr, [x28]//inicio contador para signo peligro
+
+    bl red_leds
+	ldr x25, =leds_update
+    stur xzr, [x25]//inicio contador para leds
     
     mov x19, x18 //base posiciones
     movz x4, 300 //cant elems
@@ -105,6 +119,10 @@ loop0:
 infloop:
     ldr x28, =sign_update
     bl update_danger_sign
+
+    ldr x25, =leds_update
+	bl update_leds
+
     bl draw_planet1
     //Estrellas
     movz x4, 300 // cantidad de elemento de mi arreglo (cantidad de estrellas)
@@ -132,9 +150,10 @@ delayr:
       
     b infloop
 
-
-//copia los colores en pantalla en memoria, hacer x0 un puntero al frame buffer, y x15 un puntero al arreglo de colores
-//setea x1, x2, x3
+/*
+Copia los colores en pantalla en memoria, hacer x0 un puntero al frame buffer, y x15 un puntero al arreglo de colores
+Setea x1, x2, x3
+*/
 copy_background:
 	mov x2, SCREEN_HEIGH         // Y Size 
 looop1:
@@ -200,28 +219,146 @@ black_display1:
 	bl rectangle
 	ret x16
 
-setpixel:
-    sub sp, sp, 48
-    stur x6, [sp, 40]
-    stur x9, [sp, 32]
-    stur lr, [sp, 24] 
-	stur x4, [sp, 8]
-	stur x3, [sp, 0]    
-	
-	mov x9, 640
-	mul x6, x4, x9
-	add x7, x6, x3
-	mov x9, 4 
-	mul x7, x7, x9              
-	add x7, x7, x20
-    
-    ldur x6, [sp, 40]
-    ldur x9, [sp, 32]
-    ldur lr, [sp, 24]
-	ldur x4, [sp, 8]
-	ldur x3, [sp, 0]
-	add sp, sp, 48   
-	br lr
+update_leds:
+    mov x14, x30
+    ldur x8, [x25]
+    cmp x8, 10 // cuando el contador sea 10 restauro leds
+    b.eq restaurar_leds
+    cmp x8, 20 // cuando sea 20 prendo leds rojos
+    b.eq prender_leds
+    b leds_cont
+restaurar_leds:
+	// funs en cabin.s
+    bl create_leds // Creo leds abajo de displays
+	bl left_leds
+	bl red_trio // Pongo los leds de las esquinas del led trio en rojo
+	bl red_yellow_led // Pongo led amarillo en rojo
+    b leds_cont
+prender_leds:
+    stur xzr, [x25]
+    bl red_leds // Leds abajo display en rojo
+	bl change_leds  // Cambio los colores de los leds izquierdos
+	bl led_trio  // Led trio del medio en rojo
+	bl yellow_led // Led en amarillo
+leds_cont:
+    ldur x8, [x25]
+    add x8, x8, 1
+    stur x8, [x25]
+    ret x14
+
+red_leds:
+	mov x17, x30
+	// Rectangle LEDs between buttons and displays
+	movz x1, 226
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	movz x10, #0xFF, lsl 16
+	bl rectangle	//Green led
+	movz x1, 240
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	bl rectangle	//Green led
+	movz x1, 254
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	bl rectangle	//Yellow led
+	movz x1, 268
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	bl rectangle	//Yellow led
+	movz x1, 282
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	bl rectangle	//Green led
+	movz x1, 296
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	bl rectangle	//White led
+	movz x1, 310
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	bl rectangle	//White led
+	movz x1, 324
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	bl rectangle	//Yellow led
+	movz x1, 338
+	movz x2, 431
+	movz x3, 10
+	movz x4, 7
+	bl rectangle	//Green led
+
+	ret x17
+
+change_leds:
+	mov x17, x30
+	//Little circle, grey (ring), red (inside circle)
+	mov x1, 466		
+	mov x2, 525
+	mov x3, 9
+	movz x10, 0x34, lsl 16
+	movk x10, 0x3A45, lsl 00
+	bl circle
+	mov x1, 466		
+	mov x2, 525
+	mov x3, 7
+	movz x10, 0x80, lsl 16 
+	movk x10, 0x8080, lsl 00
+	bl circle
+	//Little circle, dark-grey (ring), grey (inside circle)
+	mov x1, 446		
+	mov x2, 525
+	mov x3, 9	
+	movz x10, 0x34, lsl 16
+	movk x10, 0x3A45, lsl 00
+	bl circle		
+	mov x1, 446		
+	mov x2, 525
+	mov x3, 7
+	movz x10, 0xFF, lsl 16
+	bl circle
+
+	ret x17
+
+red_trio: 
+	mov x15, x30
+	mov x1, 466		
+	mov x2, 308
+	mov x3, 8
+	movz x10, #0xFF, lsl 16
+	bl circle
+	mov x1, 466		
+	mov x2, 328
+	mov x3, 8
+	movz x10, 0xFF, lsl 16
+	movk x10, 0xFFFF, lsl 00
+	bl circle
+	mov x1, 466		
+	mov x2, 348
+	mov x3, 8	
+	movz x10, #0xFF, lsl 16
+	bl circle
+
+	ret x15
+
+red_yellow_led:
+	mov x15, x30
+	mov x1, 456		
+	mov x2, 395
+	mov x3, 7
+	movz x10, #0xFF, lsl 16
+	bl circle
+
+	ret x15
+
 
     
 

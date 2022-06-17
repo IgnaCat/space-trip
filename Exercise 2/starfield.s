@@ -5,6 +5,8 @@
   Pseudocodigo de la estructura del script
 
   starfield.s:
+    draw_planet1: Dibuja planeta.
+    cutted_circle: Dibuja un circulo dentro de otro.
     fib: Genera pares usando fibonacci.
 	init_starfield: Genera estrellas centradas en un radio.
     init_pos: Carga el arreglo de posiciones z.
@@ -18,13 +20,13 @@
 .equ SCREEN_HEIGH, 		480
 .equ BITS_PER_PIXEL,  	32
 .equ UPDATE, 65000 //for delay
+.globl draw_planet1
+.globl cutted_circle
 .globl fib
 .globl init_starfield
 .globl init_pos
 .globl erase_stars
 .globl update_pos
-.globl draw_planet1
-.globl cutted_circle
 
 
 draw_planet1:
@@ -68,8 +70,7 @@ planet_cont2:
 
 /*
   Funcion cutted_circle: Dibuja un circulo de radio R en posicion (x,y) dentro de otro circulo
-  Registros predefinidos: x3:R1, x21:Y1, x22:X1, x8:R2, x23:Y2, x24:X2, 	
-  Registros seteados: 
+  Registros predefinidos: x3:R1, x21:Y1, x22:X1, x8:R2, x23:Y2, x24:X2
 */
 
 cutted_circle:
