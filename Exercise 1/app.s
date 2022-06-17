@@ -26,11 +26,6 @@
   ( Los demas registros son de uso variable por lo que sera detallado antes de su utilizacion )
 */
 
-/* Tareas relacionadas con los estandares
-  - Redefinir triangulo. Sacar el sp.
-  - Complentar todo siguiendo los comentarios agregados
-*/
-
 .equ SCREEN_WIDTH, 		640
 .equ SCREEN_HEIGH, 		480
 .equ BITS_PER_PIXEL,  	32
