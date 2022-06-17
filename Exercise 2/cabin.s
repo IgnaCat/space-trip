@@ -457,6 +457,11 @@ Registros: x1: X, x2: Y, x3: R
 	movz x3, 2
 	movz x4, 2
 	bl rectangle
+	movz x1, 430
+	movz x2, 400
+	movz x3, 4
+	movz x4, 4
+	bl rectangle
 
 	// Bottom white circle trio
 	mov x1, 466		

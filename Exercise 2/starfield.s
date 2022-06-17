@@ -51,14 +51,14 @@ planet_cont1:
 	stur x3, [x4]
 	
 	ldur x22, [x5]
-	cmp x22, 650   //x axis limit
+	cmp x22, 550   //x axis limit
 	b.ne planet_cont2
-	movz x22, 649
+	movz x22, 549
 planet_cont2:
 	add x22, x22, 1
 	stur x22, [x5]
 	
-	mov x21, 50		
+	mov x21, 180		
 	mov x8, 287
 	mov x23, 240		
 	mov x24, 320

@@ -80,7 +80,7 @@ loop0:
     
 	bl cabin
     
-    mov x6, 450
+    mov x6, 350
     ldr x5, =eje_planeta
     stur x6, [x5]
     
