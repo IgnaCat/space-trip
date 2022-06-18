@@ -61,9 +61,9 @@
 .globl rectangle_array
 
 
-rectangle_array:  .skip 800 //8*100 direcciones de estrellas a guardar
-stars_array:  .skip 2400  //8*600 direcciones de estrellas a guardar
-pos_array: .skip 2400     //8*600 posiciones z de estrellas a guardar
+rectangle_array:  .skip 800 //100 direcciones de estrellas a guardar
+stars_array:  .skip 2400  //600 direcciones de estrellas a guardar
+pos_array: .skip 2400     //600 posiciones z de estrellas a guardar
 sign_update: .skip 8 
 leds_update: .skip 8
 planet_size: .skip 8 //tamaño planeta
@@ -122,7 +122,8 @@ loop0:
 	mov x29, #258	//Posicion X de barrra de carga en display 3
 	
     
-//Loop general
+//Loop general de la animacion.
+
 infloop:
     ldr x28, =sign_update
     bl update_danger_sign
@@ -165,6 +166,7 @@ delayr:
 Copia los colores en pantalla en memoria, hacer x0 un puntero al frame buffer, y x15 un puntero al arreglo de colores
 Setea x1, x2, x3
 */
+
 copy_background:
 	mov x2, SCREEN_HEIGH         // Y Size 
 looop1:
@@ -372,7 +374,7 @@ red_yellow_led:
 	ret x15
 	
 /*
-Animacion de linea azul la cual la dibuja, avanza su posicion en eje x y restaura el color de fondo.
+Animacion de linea de carga de display, avanza su posicion en eje x y restaura el color de fondo.
 */
 display_animation:
 	mov x15, x30
@@ -387,11 +389,11 @@ if_rect_limit:
 	mov x29, 260
     mov x12, x29
 if_not_rect_limit:
-	movz x1, 387
-	movz x2, 5
-	movz x3, 38
+	movz x1, 396
+	movz x2, 4
+	movz x3, 20
 	movz x4, 0x1B, lsl 16
-	movk x4, 0x13F9, lsl 00
+	movk x4, 0xF3F9, lsl 00
 	bl draw_rect
 
 	movz x9, 100
