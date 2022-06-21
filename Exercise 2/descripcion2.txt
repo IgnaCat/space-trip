@@ -1,7 +1,3 @@
-Francisco Martiarena, DNI:43524389
-Ignacio Martinez Goloboff, DNI:43881375
-Nahuel Fredes, DNI:43925584
-
 >>EJERCICIO 2<<
 
 Space Trip: El codigo genera una animacion de viaje espacial desde una nave en descontrol. 
